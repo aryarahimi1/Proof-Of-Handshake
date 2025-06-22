@@ -1,0 +1,485 @@
+#pragma version 10
+#pragma typetrack false
+
+// smart_contracts.handshake.contract.HandshakeContract.__algopy_entrypoint_with_init() -> uint64:
+main:
+    intcblock 1 0 8
+    bytecblock "counter" 0x151f7c75 "handshakes" "user_handshakes" 0x0052 0x0001
+    txn ApplicationID
+    bnz main_after_if_else@2
+    // smart_contracts/handshake/contract.py:13
+    // self.counter = UInt64(0)
+    bytec_0 // "counter"
+    intc_1 // 0
+    app_global_put
+
+main_after_if_else@2:
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    txn NumAppArgs
+    bz main_bare_routing@10
+    pushbytess 0x3d26c5cc 0x648576b1 0xc9c9375a 0x5406b7ee 0xe635fdd5 // method "create_handshake(address,string)uint64", method "update_handshake_note(uint64,string)void", method "get_counter()uint64", method "get_handshake(uint64)(uint64,address,address,uint64,string)", method "get_user_handshakes(address)uint64[]"
+    txna ApplicationArgs 0
+    match main_create_handshake_route@5 main_update_handshake_note_route@6 main_get_counter_route@7 main_get_handshake_route@8 main_get_user_handshakes_route@9
+
+main_after_if_else@12:
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    intc_1 // 0
+    return
+
+main_get_user_handshakes_route@9:
+    // smart_contracts/handshake/contract.py:98
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    txna ApplicationArgs 1
+    // smart_contracts/handshake/contract.py:98
+    // @arc4.abimethod
+    callsub get_user_handshakes
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+main_get_handshake_route@8:
+    // smart_contracts/handshake/contract.py:94
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    txna ApplicationArgs 1
+    // smart_contracts/handshake/contract.py:94
+    // @arc4.abimethod
+    callsub get_handshake
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+main_get_counter_route@7:
+    // smart_contracts/handshake/contract.py:90
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub get_counter
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+main_update_handshake_note_route@6:
+    // smart_contracts/handshake/contract.py:67
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    txna ApplicationArgs 1
+    txna ApplicationArgs 2
+    // smart_contracts/handshake/contract.py:67
+    // @arc4.abimethod
+    callsub update_handshake_note
+    intc_0 // 1
+    return
+
+main_create_handshake_route@5:
+    // smart_contracts/handshake/contract.py:17
+    // @arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    txna ApplicationArgs 1
+    txna ApplicationArgs 2
+    // smart_contracts/handshake/contract.py:17
+    // @arc4.abimethod
+    callsub create_handshake
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+main_bare_routing@10:
+    // smart_contracts/handshake/contract.py:11
+    // class HandshakeContract(ARC4Contract):
+    txn OnCompletion
+    bnz main_after_if_else@12
+    txn ApplicationID
+    !
+    assert // can only call when creating
+    intc_0 // 1
+    return
+
+
+// smart_contracts.handshake.contract.HandshakeContract.create_handshake(other_user: bytes, note: bytes) -> bytes:
+create_handshake:
+    // smart_contracts/handshake/contract.py:17-18
+    // @arc4.abimethod
+    // def create_handshake(self, other_user: arc4.Address, note: arc4.String) -> arc4.UInt64:
+    proto 2 1
+    // smart_contracts/handshake/contract.py:19-20
+    // # Get the caller
+    // sender = Txn.sender
+    txn Sender
+    // smart_contracts/handshake/contract.py:25-26
+    // # Validation: Can't handshake yourself
+    // assert sender != other_user_native
+    dup
+    frame_dig -2
+    !=
+    assert
+    // smart_contracts/handshake/contract.py:28-29
+    // # Get current timestamp
+    // current_time = Global.latest_timestamp
+    global LatestTimestamp
+    // smart_contracts/handshake/contract.py:31-32
+    // # Generate unique handshake ID
+    // handshake_id = self.counter
+    intc_1 // 0
+    bytec_0 // "counter"
+    app_global_get_ex
+    assert // check self.counter exists
+    // smart_contracts/handshake/contract.py:33
+    // self.counter += UInt64(1)
+    dup
+    intc_0 // 1
+    +
+    bytec_0 // "counter"
+    swap
+    app_global_put
+    // smart_contracts/handshake/contract.py:37
+    // handshake_id=arc4.UInt64(handshake_id),
+    itob
+    dup
+    cover 3
+    // smart_contracts/handshake/contract.py:40
+    // timestamp=arc4.UInt64(current_time),
+    swap
+    itob
+    // smart_contracts/handshake/contract.py:35-42
+    // # Create and store handshake record WITH NOTE
+    // handshake_record = HandshakeRecord(
+    //     handshake_id=arc4.UInt64(handshake_id),
+    //     initiator=arc4.Address(sender),
+    //     receiver=other_user,
+    //     timestamp=arc4.UInt64(current_time),
+    //     note=note  # NEW: Store the note
+    // )
+    dig 1
+    dig 3
+    concat
+    frame_dig -2
+    concat
+    swap
+    concat
+    bytec 4 // 0x0052
+    concat
+    frame_dig -1
+    concat
+    // smart_contracts/handshake/contract.py:44-45
+    // # Store the handshake record
+    // self.handshakes[handshake_id] = handshake_record.copy()
+    bytec_2 // "handshakes"
+    uncover 2
+    concat
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // smart_contracts/handshake/contract.py:47-48
+    // # Add to initiator's handshake list
+    // if sender in self.user_handshakes:
+    bytec_3 // "user_handshakes"
+    swap
+    concat
+    dup
+    box_len
+    bury 1
+    bz create_handshake_else_body@2
+    // smart_contracts/handshake/contract.py:49
+    // initiator_list = self.user_handshakes[sender].copy()
+    frame_dig 1
+    dup
+    box_get
+    assert // check self.user_handshakes entry exists
+    // smart_contracts/handshake/contract.py:50
+    // initiator_list.append(arc4.UInt64(handshake_id))
+    extract 2 0
+    frame_dig 0
+    concat
+    dup
+    len
+    intc_2 // 8
+    /
+    itob
+    extract 6 2
+    swap
+    concat
+    // smart_contracts/handshake/contract.py:51
+    // self.user_handshakes[sender] = initiator_list.copy()
+    dig 1
+    box_del
+    pop
+    box_put
+
+create_handshake_after_if_else@3:
+    // smart_contracts/handshake/contract.py:56-57
+    // # Add to receiver's handshake list
+    // if other_user_native in self.user_handshakes:
+    bytec_3 // "user_handshakes"
+    frame_dig -2
+    concat
+    dup
+    box_len
+    bury 1
+    bz create_handshake_else_body@5
+    // smart_contracts/handshake/contract.py:58
+    // receiver_list = self.user_handshakes[other_user_native].copy()
+    dup
+    box_get
+    assert // check self.user_handshakes entry exists
+    // smart_contracts/handshake/contract.py:59
+    // receiver_list.append(arc4.UInt64(handshake_id))
+    extract 2 0
+    frame_dig 0
+    concat
+    dup
+    len
+    intc_2 // 8
+    /
+    itob
+    extract 6 2
+    swap
+    concat
+    // smart_contracts/handshake/contract.py:60
+    // self.user_handshakes[other_user_native] = receiver_list.copy()
+    dig 1
+    box_del
+    pop
+    box_put
+    // smart_contracts/handshake/contract.py:65
+    // return arc4.UInt64(handshake_id)
+    retsub
+
+create_handshake_else_body@5:
+    // smart_contracts/handshake/contract.py:62
+    // new_list = arc4.DynamicArray(arc4.UInt64(handshake_id))
+    bytec 5 // 0x0001
+    frame_dig 0
+    concat
+    // smart_contracts/handshake/contract.py:63
+    // self.user_handshakes[other_user_native] = new_list.copy()
+    swap
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // smart_contracts/handshake/contract.py:65
+    // return arc4.UInt64(handshake_id)
+    retsub
+
+create_handshake_else_body@2:
+    // smart_contracts/handshake/contract.py:53
+    // new_list = arc4.DynamicArray(arc4.UInt64(handshake_id))
+    bytec 5 // 0x0001
+    frame_dig 0
+    concat
+    // smart_contracts/handshake/contract.py:54
+    // self.user_handshakes[sender] = new_list.copy()
+    frame_dig 1
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    b create_handshake_after_if_else@3
+
+
+// smart_contracts.handshake.contract.HandshakeContract.update_handshake_note(handshake_id: bytes, new_note: bytes) -> void:
+update_handshake_note:
+    // smart_contracts/handshake/contract.py:67-68
+    // @arc4.abimethod
+    // def update_handshake_note(self, handshake_id: arc4.UInt64, new_note: arc4.String) -> None:
+    proto 2 0
+    // smart_contracts/handshake/contract.py:70
+    // sender = Txn.sender
+    txn Sender
+    dup
+    // smart_contracts/handshake/contract.py:72-73
+    // # Get existing handshake with .copy()
+    // handshake = self.handshakes[handshake_id.native].copy()
+    frame_dig -2
+    btoi
+    itob
+    bytec_2 // "handshakes"
+    swap
+    concat
+    dup
+    cover 2
+    box_get
+    swap
+    dup
+    cover 2
+    cover 3
+    assert // check self.handshakes entry exists
+    // smart_contracts/handshake/contract.py:75-76
+    // # Only initiator or receiver can update note
+    // assert sender == handshake.initiator.native or sender == handshake.receiver.native
+    extract 8 32 // on error: Index access is out of bounds
+    dup
+    cover 2
+    ==
+    bnz update_handshake_note_bool_true@2
+    frame_dig 2
+    extract 40 32 // on error: Index access is out of bounds
+    frame_dig 0
+    ==
+    bz update_handshake_note_bool_false@3
+
+update_handshake_note_bool_true@2:
+    intc_0 // 1
+
+update_handshake_note_bool_merge@4:
+    // smart_contracts/handshake/contract.py:75-76
+    // # Only initiator or receiver can update note
+    // assert sender == handshake.initiator.native or sender == handshake.receiver.native
+    assert
+    // smart_contracts/handshake/contract.py:80
+    // handshake_id=handshake.handshake_id,
+    frame_dig 2
+    dup
+    extract 0 8 // on error: Index access is out of bounds
+    // smart_contracts/handshake/contract.py:82
+    // receiver=handshake.receiver,
+    dig 1
+    extract 40 32 // on error: Index access is out of bounds
+    // smart_contracts/handshake/contract.py:83
+    // timestamp=handshake.timestamp,
+    uncover 2
+    extract 72 8 // on error: Index access is out of bounds
+    // smart_contracts/handshake/contract.py:78-85
+    // # Update the note
+    // updated_handshake = HandshakeRecord(
+    //     handshake_id=handshake.handshake_id,
+    //     initiator=handshake.initiator,
+    //     receiver=handshake.receiver,
+    //     timestamp=handshake.timestamp,
+    //     note=new_note  # Update with new note
+    // )
+    uncover 2
+    frame_dig 3
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    bytec 4 // 0x0052
+    concat
+    frame_dig -1
+    concat
+    // smart_contracts/handshake/contract.py:87-88
+    // # Store updated record
+    // self.handshakes[handshake_id.native] = updated_handshake.copy()
+    frame_dig 1
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    retsub
+
+update_handshake_note_bool_false@3:
+    intc_1 // 0
+    b update_handshake_note_bool_merge@4
+
+
+// smart_contracts.handshake.contract.HandshakeContract.get_counter() -> bytes:
+get_counter:
+    // smart_contracts/handshake/contract.py:92
+    // return arc4.UInt64(self.counter)
+    intc_1 // 0
+    bytec_0 // "counter"
+    app_global_get_ex
+    assert // check self.counter exists
+    itob
+    retsub
+
+
+// smart_contracts.handshake.contract.HandshakeContract.get_handshake(handshake_id: bytes) -> bytes:
+get_handshake:
+    // smart_contracts/handshake/contract.py:94-95
+    // @arc4.abimethod
+    // def get_handshake(self, handshake_id: arc4.UInt64) -> HandshakeRecord:
+    proto 1 1
+    // smart_contracts/handshake/contract.py:96
+    // return self.handshakes[handshake_id.native]
+    frame_dig -1
+    btoi
+    itob
+    bytec_2 // "handshakes"
+    swap
+    concat
+    box_get
+    assert // check self.handshakes entry exists
+    retsub
+
+
+// smart_contracts.handshake.contract.HandshakeContract.get_user_handshakes(user: bytes) -> bytes:
+get_user_handshakes:
+    // smart_contracts/handshake/contract.py:98-99
+    // @arc4.abimethod
+    // def get_user_handshakes(self, user: arc4.Address) -> arc4.DynamicArray[arc4.UInt64]:
+    proto 1 1
+    // smart_contracts/handshake/contract.py:101
+    // if user.native in self.user_handshakes:
+    bytec_3 // "user_handshakes"
+    frame_dig -1
+    concat
+    dup
+    box_len
+    bury 1
+    bz get_user_handshakes_else_body@2
+    // smart_contracts/handshake/contract.py:102
+    // return self.user_handshakes[user.native]
+    frame_dig 0
+    box_get
+    assert // check self.user_handshakes entry exists
+    swap
+    retsub
+
+get_user_handshakes_else_body@2:
+    // smart_contracts/handshake/contract.py:104-105
+    // # Return empty array if user has no handshakes
+    // return arc4.DynamicArray[arc4.UInt64]()
+    pushbytes 0x0000
+    swap
+    retsub
